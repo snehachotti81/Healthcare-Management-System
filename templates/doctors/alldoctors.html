@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<style>
+  .doctor-card { background: #fff; border-radius: 12px; overflow: hidden; border: 1px solid #e8e8e8; transition: transform 0.2s, box-shadow 0.2s; }
+  .doctor-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+  .doctor-card-header { background: #185FA5; padding: 1.5rem; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+  .doctor-avatar { width: 85px; height: 85px; border-radius: 50%; object-fit: cover; border: 3px solid rgba(255,255,255,0.4); }
+  .doctor-avatar-placeholder { width: 85px; height: 85px; border-radius: 50%; background: rgba(255,255,255,0.15); border: 3px solid rgba(255,255,255,0.4); display: flex; align-items: center; justify-content: center; }
+  .doctor-info-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f0f0f0; font-size: 13px; }
+  .doctor-info-row:last-of-type { border-bottom: none; }
+  .section-title { text-align: center; margin-bottom: 2rem; }
+  .section-title .underline { width: 50px; height: 3px; background: #185FA5; border-radius: 2px; margin: 10px auto 0; }
+</style>
+
+<div class="container mt-5 mb-5">
+
+  <div class="section-title">
+    <h2 style="font-size:28px; font-weight:700; color:#1a1a2e;">Our Doctors</h2>
+    <p class="text-muted">Meet our team of experienced specialists</p>
+    <div class="underline"></div>
+  </div>
+
+  <div class="row g-4">
+    {% for doctor in doctors %}
+    <div class="col-md-6 col-lg-3">
+      <div class="doctor-card h-100">
+
+        <div class="doctor-card-header">
+          {% if doctor.certificate %}
+            <img src="{{ doctor.certificate.url }}" class="doctor-avatar" alt="{{ doctor.name }}"/>
+          {% else %}
+            <div class="doctor-avatar-placeholder">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5">
+                <circle cx="12" cy="8" r="4"/>
+                <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+              </svg>
+            </div>
+          {% endif %}
+          <div class="text-center text-white">
+            <p class="mb-0 fw-semibold" style="font-size:16px;">Dr. {{ doctor.name }}</p>
+            <p class="mb-0" style="font-size:12px; opacity:0.8;">{{ doctor.specialized }}</p>
+          </div>
+        </div>
+
+        <div class="p-3">
+          <div class="doctor-info-row">
+            <span class="text-muted">Experience</span>
+            <span class="fw-semibold">{{ doctor.yoe }} yrs</span>
+          </div>
+          <div class="doctor-info-row">
+            <span class="text-muted">Age</span>
+            <span class="fw-semibold">{{ doctor.age }}</span>
+          </div>
+          <div class="doctor-info-row">
+            <span class="text-muted">Phone</span>
+            <span class="fw-semibold">{{ doctor.phone }}</span>
+          </div>
+          <div class="doctor-info-row">
+            <span class="text-muted">Email</span>
+            <span class="fw-semibold" style="font-size:12px;">{{ doctor.email }}</span>
+          </div>
+
+          <span style="display:inline-block; background:#E6F1FB; color:#0C447C; font-size:11px; padding:4px 12px; border-radius:20px; font-weight:500; margin-top:10px;">
+            {{ doctor.specialized }}
+          </span>
+
+          <a href="{% url 'doctors' %}" class="btn w-100 mt-3 text-white fw-semibold" style="background:#185FA5;">
+            Book Appointment
+          </a>
+        </div>
+
+      </div>
+    </div>
+    {% empty %}
+      <p class="text-muted text-center">No doctors available.</p>
+    {% endfor %}
+  </div>
+
+</div>
+{% endblock %}

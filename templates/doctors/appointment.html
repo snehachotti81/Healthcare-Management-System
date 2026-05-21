@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4 mb-5">
+  <div class="row justify-content-center">
+    <div class="col-md-7">
+
+      {% if treatment %}
+      <!-- Header -->
+      <div class="text-white text-center py-3 px-4 rounded-top" style="background-color: #c0392b;">
+        <h5 class="mb-0 fw-semibold">📅 Book Appointment</h5>
+        <small>with Dr. {{ treatment.doctor_name.name }} — {{ treatment.doctor_name.specialized }}</small>
+      </div>
+      <br>
+      <!-- Doctor Info Card -->
+      <div class="d-flex align-items-center gap-3 p-3" style="background-color: #d6eaf8; border: 1px solid #aed6f1;">
+        <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center" style="width:52px;height:52px;flex-shrink:0;">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5">
+            <circle cx="12" cy="8" r="4"/>
+            <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+          </svg>
+        </div>
+        <div>
+          <p class="mb-0 fw-semibold">Dr. {{ treatment.doctor_name.name }}</p>
+          <small class="text-muted">{{ treatment.doctor_name.specialized }} | {{ treatment.doctor_name.yoe }} yrs experience</small>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Form Card -->
+      <div class="card rounded-0 rounded-bottom shadow-sm">
+        <div class="card-body p-4">
+          <form method="POST">
+            {% csrf_token %}
+
+            <!-- Consultation Charge -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Consultation Charge</label>
+              <div class="input-group">
+                <span class="input-group-text">₹</span>
+                {{ form.consultation_charges }}
+              </div>
+              <small class="text-muted">This is a fixed consultation fee for this specialization.</small>
+            </div>
+
+            <!-- Patient Name -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Patient Name</label>
+              {{ form.patient_name }}
+            </div>
+
+            <!-- Gender -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Gender</label>
+              {{ form.gender }}
+            </div>
+
+            <!-- Patient Email -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Patient Email</label>
+              {{ form.patient_email }}
+            </div>
+
+            <!-- Patient Phone -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Patient Phone</label>
+              {{ form.patient_phone }}
+            </div>
+
+            <!-- Doctor (auto-filled, readonly) -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Select Doctor</label>
+              {{ form.doctorname }}
+            </div>
+
+            <!-- Date -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Appointment Date</label>
+              {{ form.date }}
+            </div>
+
+            <!-- Time Slot -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Time Slot</label>
+              {{ form.time }}
+            </div>
+
+            <!-- Reason -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Reason for Visit</label>
+              {{ form.reason }}
+            </div>
+
+            <button type="submit" class="btn w-100 text-white fw-semibold py-2" style="background-color: #c0392b;">
+              📅 Confirm Appointment
+            </button>
+
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

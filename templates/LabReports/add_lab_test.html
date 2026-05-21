@@ -1,0 +1,303 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+
+  .lab-page {
+    min-height: 100vh;
+    background: #f0f4f8;
+    font-family: 'DM Sans', sans-serif;
+    padding: 2.5rem 1rem;
+  }
+
+  .lab-form-wrap {
+    max-width: 780px;
+    margin: 0 auto;
+  }
+
+  /* Header */
+  .lab-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  .lab-header-icon {
+    width: 48px; height: 48px;
+    background: #0d9488;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(13,148,136,0.3);
+  }
+  .lab-header h2 {
+    font-size: 1.55rem;
+    font-weight: 600;
+    color: #0f172a;
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+  .lab-header p {
+    margin: 0;
+    font-size: 0.83rem;
+    color: #64748b;
+    margin-top: 2px;
+  }
+
+  /* Card */
+  .lab-card {
+    background: #ffffff;
+    border-radius: 18px;
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.06);
+  }
+
+  /* Section headers inside card */
+  .lab-section {
+    padding: 1.4rem 1.75rem 0.5rem;
+  }
+  .lab-section-title {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #94a3b8;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .lab-section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #f1f5f9;
+  }
+
+  .lab-fields {
+    padding: 0 1.75rem 1.25rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem 1.5rem;
+  }
+  .lab-fields.single { grid-template-columns: 1fr; }
+
+  .lab-field label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: #475569;
+    margin-bottom: 0.35rem;
+    letter-spacing: 0.01em;
+  }
+
+  /* Style all form widgets */
+  .lab-field select,
+  .lab-field input[type="text"],
+  .lab-field input[type="number"],
+  .lab-field input[type="date"],
+  .lab-field input[type="datetime-local"],
+  .lab-field textarea {
+    width: 100%;
+    padding: 0.55rem 0.85rem;
+    font-size: 0.875rem;
+    font-family: 'DM Sans', sans-serif;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 9px;
+    background: #f8fafc;
+    color: #0f172a;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+  .lab-field select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    padding-right: 2rem;
+  }
+  .lab-field textarea {
+    resize: vertical;
+    min-height: 80px;
+  }
+  .lab-field select:focus,
+  .lab-field input:focus,
+  .lab-field textarea:focus {
+    border-color: #0d9488;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(13,148,136,0.1);
+  }
+
+  /* Cost field with ₹ prefix */
+  .input-prefix-wrap {
+    position: relative;
+  }
+  .input-prefix {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.875rem;
+    color: #64748b;
+    font-family: 'DM Mono', monospace;
+    pointer-events: none;
+  }
+  .input-prefix-wrap input {
+    padding-left: 1.75rem !important;
+  }
+
+  /* Divider */
+  .lab-divider {
+    height: 1px;
+    background: #f1f5f9;
+    margin: 0.25rem 0;
+  }
+
+  /* Footer / Submit */
+  .lab-footer {
+    padding: 1.25rem 1.75rem;
+    background: #f8fafc;
+    border-top: 1px solid #f1f5f9;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  .lab-footer-note {
+    font-size: 0.78rem;
+    color: #94a3b8;
+  }
+  .btn-submit {
+    background: #0d9488;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 0.6rem 1.6rem;
+    font-size: 0.88rem;
+    font-weight: 600;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    letter-spacing: 0.01em;
+    transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
+    box-shadow: 0 3px 10px rgba(13,148,136,0.25);
+  }
+  .btn-submit:hover {
+    background: #0f766e;
+    transform: translateY(-1px);
+    box-shadow: 0 5px 14px rgba(13,148,136,0.3);
+  }
+  .btn-submit:active { transform: translateY(0); }
+  .btn-back {
+    background: transparent;
+    color: #64748b;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 0.6rem 1.2rem;
+    font-size: 0.88rem;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.15s, border-color 0.15s;
+    display: inline-block;
+  }
+  .btn-back:hover { background: #f1f5f9; border-color: #cbd5e1; color: #475569; }
+
+  @media (max-width: 600px) {
+    .lab-fields { grid-template-columns: 1fr; }
+  }
+</style>
+
+<div class="lab-page">
+  <div class="lab-form-wrap">
+
+    <!-- Header -->
+    <div class="lab-header">
+      <div class="lab-header-icon">🔬</div>
+      <div>
+        <h2>Add Lab Test</h2>
+        <p>Create a new lab test record for a patient</p>
+      </div>
+    </div>
+
+    <!-- Card -->
+    <div class="lab-card">
+      <form method="POST">
+        {% csrf_token %}
+
+        <!-- Patient & Doctor -->
+        <div class="lab-section">
+          <div class="lab-section-title">Patient &amp; Doctor</div>
+        </div>
+        <div class="lab-fields">
+          <div class="lab-field">
+            <label>Referred By</label>
+            {{ form.referred_by }}
+          </div>
+          <div class="lab-field">
+            <label>Patient Name</label>
+            {{ form.patient_name }}
+          </div>
+        </div>
+
+        <div class="lab-divider"></div>
+
+        <!-- Test Details -->
+        <div class="lab-section">
+          <div class="lab-section-title">Test Details</div>
+        </div>
+        <div class="lab-fields">
+          <div class="lab-field">
+            <label>Lab Test</label>
+            {{ form.lab_test }}
+          </div>
+          <div class="lab-field">
+            <label>Lab Result</label>
+            {{ form.lab_result }}
+          </div>
+          <div class="lab-field">
+            <label>Result Range</label>
+            {{ form.result_range }}
+          </div>
+          <div class="lab-field">
+            <label>Test Cost</label>
+            <div class="input-prefix-wrap">
+              <span class="input-prefix">₹</span>
+              {{ form.test_cost }}
+            </div>
+          </div>
+        </div>
+
+        <div class="lab-divider"></div>
+
+        <!-- Notes -->
+        <div class="lab-section">
+          <div class="lab-section-title">Notes</div>
+        </div>
+        <div class="lab-fields single">
+          <div class="lab-field">
+            <label>Result Description</label>
+            {{ form.result_desc }}
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="lab-footer">
+          <span class="lab-footer-note">All fields are required unless noted</span>
+          <div style="display:flex;gap:0.6rem;align-items:center;">
+            <a href="{% url 'lab_dashboard' %}" class="btn-back">Cancel</a>
+            <button type="submit" class="btn-submit">Add Test ➕</button>
+          </div>
+        </div>
+
+      </form>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

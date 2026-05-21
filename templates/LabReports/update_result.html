@@ -1,0 +1,354 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+  body { background: #f8fafc; font-family: 'Segoe UI', sans-serif; }
+
+  .page-header {
+    background: linear-gradient(135deg, #1e293b, #0f172a);
+    padding: 1.5rem 2rem; color: white;
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
+  }
+  .page-header h3 { margin: 0; font-weight: 700; font-size: 1.3rem; }
+  .page-header p  { margin: 0; opacity: 0.7; font-size: 0.88rem; }
+
+  .content-wrap {
+    max-width: 860px; margin: 2rem auto; padding: 0 1.5rem;
+  }
+
+  /* Info card - read only record summary */
+  .info-card {
+    background: white;
+    border-radius: 14px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+  }
+  .info-card-header {
+    background: #f8fafc;
+    border-bottom: 1px solid #e2e8f0;
+    padding: 0.85rem 1.25rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: #64748b;
+  }
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 0; 
+  }
+  .info-item {
+    padding: 1rem 1.25rem;
+    border-right: 1px solid #f1f5f9;
+    border-bottom: 1px solid #f1f5f9;
+  }
+  .info-item:last-child { border-right: none; }
+  .info-label { font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.3rem; }
+  .info-value { font-size: 0.95rem; font-weight: 600; color: #0f172a; }
+
+  .test-badge {
+    display: inline-block;
+    background: #ccfbf1; color: #0f766e;
+    border-radius: 8px; padding: 3px 10px;
+    font-size: 0.82rem; font-weight: 700;
+  }
+  .cost-val { color: #16a34a; font-weight: 700; }
+
+  /* Form card */
+  .form-card {
+    background: white;
+    border-radius: 14px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    overflow: hidden;
+  }
+  .form-card-header {
+    background: linear-gradient(90deg, #0d9488, #0f766e);
+    padding: 1rem 1.25rem;
+    color: white;
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+  .form-card-header h5 { margin: 0; font-weight: 700; font-size: 1rem; }
+  .form-body { padding: 1.5rem 1.25rem; }
+
+  .form-group { margin-bottom: 1.25rem; }
+  .form-label {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #374151;
+    margin-bottom: 0.45rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .form-label span { color: #ef4444; margin-left: 2px; }
+
+  .styled-select, .styled-textarea {
+    width: 100%;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 0.65rem 0.9rem;
+    font-size: 0.93rem;
+    color: #0f172a;
+    background: #f8fafc;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    font-family: 'Segoe UI', sans-serif;
+  }
+  .styled-select:focus, .styled-textarea:focus {
+    border-color: #0d9488;
+    box-shadow: 0 0 0 3px rgba(13,148,136,0.12);
+    background: white;
+  }
+  .styled-textarea { resize: vertical; min-height: 100px; }
+
+  /* Status selector with visual cues */
+  .status-options {
+    display: flex; gap: 0.75rem; flex-wrap: wrap;
+  }
+  .status-option input[type="radio"] { display: none; }
+  .status-option label {
+    display: flex; align-items: center; gap: 0.4rem;
+    padding: 0.55rem 1.1rem;
+    border-radius: 10px;
+    border: 2px solid #e2e8f0;
+    cursor: pointer;
+    font-size: 0.88rem; font-weight: 600;
+    transition: all 0.15s;
+    background: #f8fafc;
+    color: #64748b;
+  }
+  .status-option input[type="radio"]:checked + label {
+    border-color: currentColor;
+    background: var(--bg);
+    color: var(--fg);
+  }
+  .status-opt-pending  { --bg: #fef9c3; --fg: #854d0e; }
+  .status-opt-ongoing  { --bg: #dbeafe; --fg: #1e40af; }
+  .status-opt-completed{ --bg: #dcfce7; --fg: #166534; }
+
+  .status-option label:hover { border-color: #94a3b8; }
+
+  /* Range options */
+  .range-options {
+    display: flex; gap: 0.6rem; flex-wrap: wrap;
+  }
+  .range-option input[type="radio"] { display: none; }
+  .range-option label {
+    padding: 0.4rem 0.9rem;
+    border-radius: 8px;
+    border: 2px solid #e2e8f0;
+    cursor: pointer;
+    font-size: 0.83rem; font-weight: 600;
+    transition: all 0.15s;
+    background: #f8fafc;
+    color: #64748b;
+  }
+  .range-option input[type="radio"]:checked + label {
+    border-color: currentColor;
+    background: var(--bg);
+    color: var(--fg);
+  }
+  .range-opt-nil      { --bg: #f1f5f9; --fg: #475569; }
+  .range-opt-positive { --bg: #ffedd5; --fg: #9a3412; }
+  .range-opt-negative { --bg: #f0fdf4; --fg: #15803d; }
+  .range-opt-normal   { --bg: #dcfce7; --fg: #166534; }
+  .range-opt-abnormal { --bg: #fee2e2; --fg: #991b1b; }
+
+  .form-divider {
+    border: none; border-top: 1px solid #f1f5f9;
+    margin: 1.5rem 0;
+  }
+
+  .form-actions {
+    display: flex; gap: 0.75rem; justify-content: flex-end;
+    padding: 1rem 1.25rem;
+    background: #f8fafc;
+    border-top: 1px solid #e2e8f0;
+  }
+  .btn-save {
+    background: #0d9488; color: white;
+    border: none; border-radius: 10px;
+    padding: 0.65rem 1.6rem;
+    font-weight: 700; font-size: 0.93rem;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+  }
+  .btn-save:hover { background: #0f766e; transform: translateY(-1px); }
+  .btn-save:active { transform: translateY(0); }
+
+  .btn-cancel {
+    background: white; color: #64748b;
+    border: 1.5px solid #e2e8f0; border-radius: 10px;
+    padding: 0.65rem 1.4rem;
+    font-weight: 600; font-size: 0.93rem;
+    text-decoration: none;
+    transition: background 0.15s;
+    display: inline-block;
+  }
+  .btn-cancel:hover { background: #f1f5f9; color: #374151; }
+
+  /* Success message */
+  {% if messages %}
+  {% endif %}
+  .alert-success-custom {
+    background: #dcfce7; border: 1px solid #bbf7d0;
+    color: #166534; border-radius: 10px;
+    padding: 0.85rem 1.25rem;
+    margin-bottom: 1.25rem;
+    display: flex; align-items: center; gap: 0.5rem;
+    font-weight: 500;
+  }
+</style>
+
+<div class="page-header">
+  <div>
+    <h3>✏️ Update Test Result</h3>
+    <p>Record #{{ record.pk }} · {{ record.get_lab_test_display }}</p>
+  </div>
+  <a href="{% url 'lab_dashboard' %}" class="btn btn-sm btn-outline-light">← Back to Dashboard</a>
+</div>
+
+<div class="content-wrap">
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert-success-custom">✅ {{ message }}</div>
+    {% endfor %}
+  {% endif %}
+
+  <!-- Patient & Test Summary (read-only) -->
+  <div class="info-card">
+    <div class="info-card-header">📋 Test Record Details</div>
+    <div class="info-grid">
+      <div class="info-item">
+        <div class="info-label">Patient</div>
+        <div class="info-value">
+          {{ record.patient_name.user.get_full_name|default:record.patient_name.user.username }}
+        </div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">Referred By</div>
+        <div class="info-value">Dr. {{ record.referred_by.name }}</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">Test</div>
+        <div class="info-value">
+          <span class="test-badge">{{ record.get_lab_test_display }}</span>
+        </div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">Cost</div>
+        <div class="info-value cost-val">₹ {{ record.test_cost }}</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">Ordered On</div>
+        <div class="info-value">{{ record.created_at|date:"d M Y, H:i" }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Update Form -->
+  <div class="form-card">
+    <div class="form-card-header">
+      <span>🔬</span>
+      <h5>Enter / Update Result</h5>
+    </div>
+
+    <form method="POST" action="{% url 'update_test_result' record.pk %}">
+      {% csrf_token %}
+      <div class="form-body">
+
+        <!-- Test Status -->
+        <div class="form-group">
+          <label class="form-label">Test Status <span>*</span></label>
+          <div class="status-options">
+
+            <div class="status-option status-opt-pending">
+              <input type="radio" name="lab_result" id="s_pending" value="PENDING"
+                {% if record.lab_result == 'PENDING' %}checked{% endif %}>
+              <label for="s_pending">⏳ Pending</label>
+            </div>
+
+            <div class="status-option status-opt-ongoing">
+              <input type="radio" name="lab_result" id="s_ongoing" value="ONGOING"
+                {% if record.lab_result == 'ONGOING' %}checked{% endif %}>
+              <label for="s_ongoing">🔄 Ongoing</label>
+            </div>
+
+            <div class="status-option status-opt-completed">
+              <input type="radio" name="lab_result" id="s_completed" value="COMPLETED"
+                {% if record.lab_result == 'COMPLETED' %}checked{% endif %}>
+              <label for="s_completed">✅ Completed</label>
+            </div>
+
+          </div>
+        </div>
+
+        <hr class="form-divider">
+
+        <!-- Result Range -->
+        <div class="form-group">
+          <label class="form-label">Result Range <span>*</span></label>
+          <div class="range-options">
+
+            <div class="range-option range-opt-nil">
+              <input type="radio" name="result_range" id="r_nil" value="NIL"
+                {% if record.result_range == 'NIL' %}checked{% endif %}>
+              <label for="r_nil">— NIL</label>
+            </div>
+
+            <div class="range-option range-opt-normal">
+              <input type="radio" name="result_range" id="r_normal" value="NORMAL"
+                {% if record.result_range == 'NORMAL' %}checked{% endif %}>
+              <label for="r_normal">✅ Normal</label>
+            </div>
+
+            <div class="range-option range-opt-abnormal">
+              <input type="radio" name="result_range" id="r_abnormal" value="ABNORMAL"
+                {% if record.result_range == 'ABNORMAL' %}checked{% endif %}>
+              <label for="r_abnormal">⚠️ Abnormal</label>
+            </div>
+
+            <div class="range-option range-opt-positive">
+              <input type="radio" name="result_range" id="r_positive" value="POSITIVE"
+                {% if record.result_range == 'POSITIVE' %}checked{% endif %}>
+              <label for="r_positive">🔴 Positive</label>
+            </div>
+
+            <div class="range-option range-opt-negative">
+              <input type="radio" name="result_range" id="r_negative" value="NEGATIVE"
+                {% if record.result_range == 'NEGATIVE' %}checked{% endif %}>
+              <label for="r_negative">🟢 Negative</label>
+            </div>
+
+          </div>
+        </div>
+
+        <hr class="form-divider">
+
+        <!-- Result Description -->
+        <div class="form-group">
+          <label class="form-label" for="result_desc">Result Description / Notes</label>
+          <textarea
+            name="result_desc"
+            id="result_desc"
+            class="styled-textarea"
+            placeholder="Enter detailed findings, observations, or remarks about the test result..."
+          >{{ record.result_desc }}</textarea>
+        </div>
+
+      </div>
+
+      <div class="form-actions">
+        <a href="{% url 'lab_dashboard' %}" class="btn-cancel">Cancel</a>
+        <button type="submit" class="btn-save">💾 Save Result</button>
+      </div>
+    </form>
+  </div>
+
+</div>
+{% endblock %}

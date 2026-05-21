@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Available Treatments</h2>
+
+    <div class="row">  <!-- ✅ ONE ROW START -->
+
+        {% for treatment in treatments %}
+        <div class="col-md-4 mb-4">  <!-- ✅ 3 cards per row -->
+
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        {{ treatment.treatment_name }}
+                    </h5>
+
+
+                    <p class="card-text">
+                        {{ treatment.description }}
+                    </p>
+
+                    <p>
+                        <b>Categories:</b> {{ treatment.category }}
+                    </p>
+                    
+                    <p>
+                        <b>Doctor:</b> {{ treatment.doctor_name.name }}
+                    </p>
+
+                    <a href="{% url "doctors" %}" class="btn btn-warning w-100">
+                        Book Appointment
+                    </a>
+                </div>
+            </div>
+
+        </div>
+        {% endfor %}
+
+    </div> <!-- ✅ ROW END -->
+
+</div>
+
+{% endblock %}

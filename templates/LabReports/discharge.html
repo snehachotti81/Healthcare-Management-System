@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4" style="max-width:700px;">
+  <div class="card shadow-sm">
+    <div class="card-header text-white fw-bold fs-5" style="background:#7c3aed;">
+      🏥 Discharge Summary
+    </div>
+    <div class="card-body p-4">
+
+      {% if messages %}
+        {% for msg in messages %}
+          <div class="alert alert-success">{{ msg }}</div>
+        {% endfor %}
+      {% endif %}
+
+      <form method="POST">
+        {% csrf_token %}
+
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Patient Name</label>
+          {{ form.patient_name }}
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Doctor Name</label>
+          {{ form.doctor }}
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Treatment</label>
+          {{ form.treatment }}
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Description</label>
+          {{ form.description }}
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Date of Admission (DOA)</label>
+            {{ form.doa }}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Date of Discharge (DOD)</label>
+            {{ form.dod }}
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-md-8">
+            <label class="form-label fw-semibold">Room Type</label>
+            {{ form.room_type }}
+          </div>
+          <div class="col-md-4">
+            <label class="form-label fw-semibold">Total Days</label>
+            {{ form.total_days }}
+          </div>
+        </div>
+
+        <!-- Food Options -->
+        <div class="rounded p-3 mb-3" style="background:#fef9c3; border:1px solid #fde68a;">
+          <div class="fw-bold mb-3">🍽️ Food Options</div>
+          <div class="row text-center">
+            <div class="col-3">
+              {{ form.food_morning }}
+              <div class="mt-1">🌅 Morning</div>
+              <small class="text-muted">₹120/day</small>
+            </div>
+            <div class="col-3">
+              {{ form.food_lunch }}
+              <div class="mt-1">🍛 Lunch</div>
+              <small class="text-muted">₹200/day</small>
+            </div>
+            <div class="col-3">
+              {{ form.food_dinner }}
+              <div class="mt-1">🍽️ Dinner</div>
+              <small class="text-muted">₹160/day</small>
+            </div>
+            <div class="col-3">
+              {{ form.food_coffee_tea }}
+              <div class="mt-1">☕ Coffee/Tea</div>
+              <small class="text-muted">₹40/day</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Medicine info -->
+        <div class="rounded p-3 mb-4" style="background:#eff6ff; border:1px solid #bfdbfe;">
+          <small>
+            💊 <strong>Medicine charges</strong> added automatically by room type
+            (Common Ward 10% · Semi-Private 12% · Private AC 15% · Private Non-AC 13% · Delux 20%)
+          </small>
+        </div>
+
+        <button type="submit" class="btn w-100 text-white fw-bold" style="background:#16a34a;">
+          ✅ Discharge &amp; Proceed to Payment
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4" style="max-width:650px;">
+  <div class="card shadow">
+
+    <div class="card-header text-white fw-bold fs-5" style="background:#0f172a;">
+      💳 Make Payment
+    </div>
+
+    <div class="card-body p-4">
+
+      {% if messages %}
+        {% for msg in messages %}
+          <div class="alert alert-info">{{ msg }}</div>
+        {% endfor %}
+      {% endif %}
+
+      <!-- Bill summary -->
+      <div class="rounded p-3 mb-4" style="background:#f0fdf4; border:1px solid #bbf7d0;">
+        <h6 class="fw-bold mb-2">Bill Summary</h6>
+        <div class="d-flex justify-content-between"><span>Patient</span><strong>{{ summary.patient_name }}</strong></div>
+        <div class="d-flex justify-content-between"><span>Room Charges</span><span>₹{{ summary.room_charges }}</span></div>
+        <div class="d-flex justify-content-between"><span>Medicine Charges</span><span>₹{{ summary.medicine_charges }}</span></div>
+        <div class="d-flex justify-content-between"><span>Food Charges</span><span>₹{{ summary.food_charges }}</span></div>
+        <div class="d-flex justify-content-between"><span>Lab Test Charges</span><span>₹{{ summary.lab_charges }}</span></div>
+        <hr>
+        <div class="d-flex justify-content-between fs-5">
+          <strong>Total Amount</strong>
+          <strong class="text-success">₹{{ summary.total_amount }}</strong>
+        </div>
+      </div>
+
+      <!-- Payment form -->
+      <form method="POST">
+        {% csrf_token %}
+
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Payment Method</label>
+          {{ form.payment_method }}
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label fw-semibold">Transaction ID <span class="text-muted fw-normal">(optional for cash)</span></label>
+          {{ form.transaction_id }}
+        </div>
+
+        <button type="submit" class="btn w-100 text-white fw-bold" style="background:#7c3aed;">
+          ✅ Confirm Payment of ₹{{ summary.total_amount }}
+        </button>
+      </form>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,323 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+  body { background: #f8fafc; font-family: 'Segoe UI', sans-serif; }
+
+  .page-header {
+    background: linear-gradient(135deg, #1e293b, #0f172a);
+    padding: 1.5rem 2rem; color: white;
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
+  }
+  .page-header-left { display: flex; align-items: center; gap: 0.75rem; }
+  .page-header h3 { margin: 0; font-weight: 700; font-size: 1.4rem; }
+  .page-header p  { margin: 0; opacity: 0.7; font-size: 0.88rem; }
+
+  .stat-cards {
+    display: flex; gap: 1rem; padding: 1.25rem 2rem;
+    background: #0f172a; flex-wrap: wrap;
+  }
+  .stat-card {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 10px; padding: 0.8rem 1.2rem;
+    color: white; min-width: 120px;
+  }
+  .stat-card .val { font-size: 1.4rem; font-weight: 800; }
+  .stat-card .lbl { font-size: 0.75rem; opacity: 0.65; text-transform: uppercase; letter-spacing: 0.05em; }
+
+  .content-wrap { padding: 1.5rem 2rem; }
+
+  .filter-bar {
+    display: flex; gap: 0.75rem; margin-bottom: 1.25rem; flex-wrap: wrap; align-items: center;
+  }
+  .filter-bar select, .filter-bar input {
+    border: 1.5px solid #e2e8f0; border-radius: 8px;
+    padding: 0.45rem 0.85rem; font-size: 0.88rem;
+    background: white; color: #0f172a;
+    outline: none;
+  }
+  .filter-bar select:focus, .filter-bar input:focus { border-color: #0d9488; }
+
+  .dashboard-card {
+    background: white;
+    border-radius: 14px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+  }
+
+  .dash-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+  .dash-table thead th {
+    background: #0f172a; color: white;
+    font-size: 0.75rem; letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0.8rem 0.9rem;
+    font-weight: 600; border: none;
+    white-space: nowrap;
+  }
+  .dash-table tbody tr { transition: background 0.12s; }
+  .dash-table tbody tr:hover { background: #f0fdfa; }
+  .dash-table tbody td {
+    padding: 0.75rem 0.9rem;
+    vertical-align: middle;
+    border-bottom: 1px solid #f1f5f9;
+    color: #1e293b;
+  }
+  .dash-table tbody tr:last-child td { border-bottom: none; }
+
+  .patient-name { font-weight: 600; color: #0f172a; }
+  .doctor-name  { color: #64748b; font-size: 0.83rem; }
+
+  .status-pill {
+    display: inline-block;
+    border-radius: 20px; padding: 3px 10px;
+    font-size: 0.76rem; font-weight: 600;
+  }
+  .status-pending  { background: #fef9c3; color: #854d0e; }
+  .status-ongoing  { background: #dbeafe; color: #1e40af; }
+  .status-completed{ background: #dcfce7; color: #166534; }
+
+  .range-pill {
+    display: inline-block;
+    border-radius: 6px; padding: 2px 8px;
+    font-size: 0.76rem; font-weight: 600;
+  }
+  .range-normal   { background: #dcfce7; color: #15803d; }
+  .range-abnormal { background: #fee2e2; color: #991b1b; }
+  .range-positive { background: #ffedd5; color: #9a3412; }
+  .range-negative { background: #f0fdf4; color: #15803d; }
+  .range-nil      { background: #f1f5f9; color: #64748b; }
+
+  .action-btns { display: flex; gap: 0.4rem; }
+  .btn-sm-teal {
+    background: #0d9488; color: white;
+    border: none; border-radius: 7px;
+    padding: 0.3rem 0.65rem; font-size: 0.78rem;
+    cursor: pointer; text-decoration: none;
+    display: inline-flex; align-items: center; gap: 3px;
+    transition: background 0.15s;
+  }
+  .btn-sm-teal:hover { background: #0f766e; color: white; }
+  .btn-sm-slate {
+    background: #f1f5f9; color: #475569;
+    border: 1px solid #e2e8f0; border-radius: 7px;
+    padding: 0.3rem 0.65rem; font-size: 0.78rem;
+    cursor: pointer; text-decoration: none;
+    display: inline-flex; align-items: center; gap: 3px;
+    transition: background 0.15s;
+  }
+  .btn-sm-slate:hover { background: #e2e8f0; }
+
+  .sno { color: #94a3b8; font-weight: 600; }
+  .cost-val { font-weight: 700; color: #16a34a; }
+  .date-val { color: #64748b; font-size: 0.82rem; white-space: nowrap; }
+
+  .empty-row td {
+    text-align: center; padding: 3rem 1rem;
+    color: #94a3b8; font-size: 0.9rem;
+  }
+
+  /* Pagination */
+  .pagination-wrap {
+    padding: 1.25rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .pagination .page-link {
+    color: #0d9488;
+    border-color: #e2e8f0;
+    font-size: 0.85rem;
+    padding: 0.4rem 0.75rem;
+  }
+  .pagination .page-item.active .page-link {
+    background-color: #0d9488;
+    border-color: #0d9488;
+    color: white;
+  }
+  .pagination .page-item.disabled .page-link {
+    color: #cbd5e1;
+    border-color: #e2e8f0;
+  }
+  .pagination .page-link:hover:not(.active) { background: #f0fdfa; }
+  .page-info { font-size: 0.78rem; color: #94a3b8; }
+</style>
+
+<div class="page-header">
+  <div class="page-header-left">
+    <span style="font-size:1.8rem">📊</span>
+    <div>
+      <h3>Lab Dashboard</h3>
+      <p>All lab test records · managed by {{ request.user.get_full_name|default:request.user.username }}</p>
+    </div>
+  </div>
+  <a href="{% url 'all_tests' %}" class="btn btn-sm btn-outline-light">← Test Catalogue</a>
+</div>
+
+<div class="stat-cards">
+  <div class="stat-card">
+    <div class="val">{{ total_tests|default:"—" }}</div>
+    <div class="lbl">Total Tests</div>
+  </div>
+  <div class="stat-card">
+    <div class="val">{{ pending_count|default:"—" }}</div>
+    <div class="lbl">Pending</div>
+  </div>
+  <div class="stat-card">
+    <div class="val">{{ ongoing_count|default:"—" }}</div>
+    <div class="lbl">Ongoing</div>
+  </div>
+  <div class="stat-card">
+    <div class="val">{{ completed_count|default:"—" }}</div>
+    <div class="lbl">Completed</div>
+  </div>
+</div>
+
+<div class="content-wrap">
+
+  <div class="filter-bar">
+    <input type="text" placeholder="🔍 Search patient..." id="searchInput" oninput="filterTable()">
+    <select id="statusFilter" onchange="filterTable()">
+      <option value="">All Statuses</option>
+      <option value="pending">Pending</option>
+      <option value="ongoing">Ongoing</option>
+      <option value="completed">Completed</option>
+    </select>
+    <select id="testFilter" onchange="filterTable()">
+      <option value="">All Tests</option>
+      <option value="CBC">CBC</option>
+      <option value="LFT">LFT</option>
+      <option value="Urine Total Test">Urine Total Test</option>
+      <option value="Urine Microscopic">Urine Microscopic</option>
+      <option value="Serum Routine">Serum Routine</option>
+      <option value="Thyroid">Thyroid</option>
+    </select>
+    <a href="{% url 'all_lab_test' %}" class="btn btn-success">Add ➕</a>
+  </div>
+
+  <div class="dashboard-card">
+    <div style="overflow-x:auto;">
+      <table class="dash-table" id="dashTable">
+        <thead>
+          <tr>
+            <th>S.No</th>
+            <th>Patient Name</th>
+            <th>Referred By</th>
+            <th>Test Name</th>
+            <th>Price</th>
+            <th>Date / Time</th>
+            <th>Status</th>
+            <th>Result Range</th>
+            <th>Edit</th>
+            <th>Files</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody">
+          {% for record in lab_tests %}
+          <tr>
+            <td class="sno">{{ forloop.counter }}</td>
+            <td>
+              <span class="patient-name">{{ record.patient_name.user.get_full_name|default:record.patient_name.user.username }}</span>
+            </td>
+            <td>
+              <span class="doctor-name">Dr. {{ record.referred_by.name }}</span>
+            </td>
+            <td>{{ record.get_lab_test_display }}</td>
+            <td><span class="cost-val">₹ {{ record.test_cost }}</span></td>
+            <td><span class="date-val">{{ record.created_at|date:"d M Y, H:i" }}</span></td>
+            <td>
+              <span class="status-pill status-{{ record.lab_result|lower }}">
+                {{ record.get_lab_result_display }}
+              </span>
+            </td>
+            <td>
+              {% if record.result_range == 'NIL' %}
+                <span class="range-pill range-nil">—</span>
+              {% else %}
+                <span class="range-pill range-{{ record.result_range|lower }}">
+                  {{ record.get_result_range_display }}
+                </span>
+              {% endif %}
+            </td>
+            <td>
+              <div class="action-btns">
+                <a href="{% url 'update_test_result' record.pk %}" class="btn-sm-teal">✏️ Update</a>
+              </div>
+            </td>
+            <td>
+              <a href="#" class="btn-sm-slate">📎 View</a>
+            </td>
+          </tr>
+          {% empty %}
+          <tr class="empty-row">
+            <td colspan="10">
+              <div style="font-size:2rem;margin-bottom:0.5rem;">🔬</div>
+              No lab test records found.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- PAGINATION -->
+  {% if lab_tests.paginator.num_pages > 1 %}
+  <div class="pagination-wrap">
+    <ul class="pagination mb-1">
+
+      <!-- First -->
+      <li class="page-item {% if not lab_tests.has_previous %}disabled{% endif %}">
+        <a class="page-link" href="{% if lab_tests.has_previous %}?pg=1{% else %}#{% endif %}">««</a>
+      </li>
+
+      <!-- Previous -->
+      <li class="page-item {% if not lab_tests.has_previous %}disabled{% endif %}">
+        <a class="page-link" href="{% if lab_tests.has_previous %}?pg={{ lab_tests.previous_page_number }}{% else %}#{% endif %}">‹</a>
+      </li>
+
+      <!-- Page numbers -->
+      {% for num in lab_tests.paginator.page_range %}
+        <li class="page-item {% if lab_tests.number == num %}active{% endif %}">
+          <a class="page-link" href="?pg={{ num }}">{{ num }}</a>
+        </li>
+      {% endfor %}
+
+      <!-- Next -->
+      <li class="page-item {% if not lab_tests.has_next %}disabled{% endif %}">
+        <a class="page-link" href="{% if lab_tests.has_next %}?pg={{ lab_tests.next_page_number }}{% else %}#{% endif %}">›</a>
+      </li>
+
+      <!-- Last -->
+      <li class="page-item {% if not lab_tests.has_next %}disabled{% endif %}">
+        <a class="page-link" href="{% if lab_tests.has_next %}?pg={{ lab_tests.paginator.num_pages }}{% else %}#{% endif %}">»»</a>
+      </li>
+
+    </ul>
+    <span class="page-info">Page {{ lab_tests.number }} of {{ lab_tests.paginator.num_pages }} · {{ total_tests }} total records</span>
+  </div>
+  {% endif %}
+
+</div>
+
+<script>
+function filterTable() {
+  const search = document.getElementById('searchInput').value.toLowerCase();
+  const status = document.getElementById('statusFilter').value.toLowerCase();
+  const test   = document.getElementById('testFilter').value.toLowerCase();
+  const rows   = document.querySelectorAll('#tableBody tr:not(.empty-row)');
+
+  rows.forEach(row => {
+    const text        = row.textContent.toLowerCase();
+    const matchSearch = !search || text.includes(search);
+    const matchStatus = !status || text.includes(status);
+    const matchTest   = !test   || text.includes(test);
+    row.style.display = (matchSearch && matchStatus && matchTest) ? '' : 'none';
+  });
+}
+</script>
+
+{% endblock %}

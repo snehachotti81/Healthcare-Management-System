@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4" style="max-width:850px;">
+  <div class="card shadow">
+
+    <!-- Header -->
+    <div class="card-header d-flex justify-content-between align-items-center bg-dark text-white">
+      <h4 class="mb-0">🧾 Final Bill</h4>
+      <span>Discharge #{{ summary.pk }}</span>
+    </div>
+
+    <div class="card-body p-4">
+
+      <!-- Hospital name -->
+      <div class="text-center mb-4">
+        <h5 class="fw-bold">⚕️ Medanta Hospital</h5>
+        <p class="text-muted mb-0">Discharge Bill Receipt</p>
+        <hr>
+      </div>
+
+      <!-- Patient info -->
+      <div class="row mb-4">
+        <div class="col-md-6">
+          <p><strong>Patient:</strong> {{ summary.patient_name }}</p>
+          <p><strong>Doctor:</strong> {{ summary.doctor }}</p>
+          <p><strong>Treatment:</strong> {{ summary.treatment }}</p>
+        </div>
+        <div class="col-md-6">
+          <p><strong>DOA:</strong> {{ summary.doa }}</p>
+          <p><strong>DOD:</strong> {{ summary.dod }}</p>
+          <p><strong>Room Type:</strong> {{ summary.get_room_type_display }}</p>
+          <p><strong>Total Days:</strong> {{ summary.total_days }}</p>
+        </div>
+      </div>
+
+      <hr>
+
+      <!-- Bill Table -->
+      <table class="table table-bordered">
+        <thead class="table-dark">
+          <tr>
+            <th>Item</th>
+            <th class="text-end">Amount (₹)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>🛏️ Room Charges ({{ summary.total_days }} days)</td>
+            <td class="text-end">₹{{ summary.room_charges }}</td>
+          </tr>
+          <tr>
+            <td>💊 Medicine Charges ({{ summary.get_room_type_display }} — auto %)</td>
+            <td class="text-end">₹{{ summary.medicine_charges }}</td>
+          </tr>
+          <tr>
+            <td>
+              🍽️ Food Charges
+              <br>
+              <small class="text-muted">
+                {% if summary.food_morning %}🌅 Morning (₹120/day) &nbsp;{% endif %}
+                {% if summary.food_lunch %}🍛 Lunch (₹200/day) &nbsp;{% endif %}
+                {% if summary.food_dinner %}🍽️ Dinner (₹160/day) &nbsp;{% endif %}
+                {% if summary.food_coffee_tea %}☕ Coffee/Tea (₹40/day){% endif %}
+                {% if not summary.food_morning and not summary.food_lunch and not summary.food_dinner and not summary.food_coffee_tea %}
+                  No food selected
+                {% endif %}
+              </small>
+            </td>
+            <td class="text-end">₹{{ summary.food_charges }}</td>
+          </tr>
+          <tr>
+            <td>
+              🧪 Lab Test Charges
+              {% if lab_tests %}
+                <br>
+                {% for test in lab_tests %}
+                  <small class="text-muted">• {{ test.lab_test }} — ₹{{ test.test_cost }}</small><br>
+                {% endfor %}
+              {% endif %}
+            </td>
+            <td class="text-end">₹{{ summary.lab_charges }}</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr style="background:#d1fae5;">
+            <td><strong>💰 Grand Total</strong></td>
+            <td class="text-end"><strong>₹{{ summary.total_amount }}</strong></td>
+          </tr>
+        </tfoot>
+      </table>
+
+      <!-- Payment status -->
+      {% if payment %}
+      <div class="rounded p-3 mb-3" style="background:#f0fdf4; border:1px solid #bbf7d0;">
+        <h6 class="fw-bold mb-2">💳 Payment Details</h6>
+        <div class="d-flex justify-content-between"><span>Status</span><strong class="text-success">{{ payment.get_payment_status_display }}</strong></div>
+        <div class="d-flex justify-content-between"><span>Method</span><span>{{ payment.get_payment_method_display }}</span></div>
+        <div class="d-flex justify-content-between"><span>Amount Paid</span><span>₹{{ payment.amount_paid }}</span></div>
+        {% if payment.transaction_id %}
+        <div class="d-flex justify-content-between"><span>Transaction ID</span><span>{{ payment.transaction_id }}</span></div>
+        {% endif %}
+        <div class="d-flex justify-content-between"><span>Paid At</span><span>{{ payment.paid_at|date:"d M Y, h:i A" }}</span></div>
+      </div>
+      {% else %}
+      <div class="alert alert-warning">
+        ⚠️ Payment not yet done.
+        <a href="{% url 'make_payment' summary.pk %}" class="btn btn-sm btn-warning ms-2">Pay Now</a>
+      </div>
+      {% endif %}
+
+      <!-- Buttons -->
+      <div class="d-flex gap-2 mt-3">
+        <button onclick="window.print()" class="btn btn-outline-dark">🖨️ Print Bill</button>
+        <a href="{% url 'all_discharges' %}" class="btn btn-outline-primary">📋 All Discharges</a>
+        <a href="{% url 'home' %}" class="btn text-white" style="background:#7c3aed;">🏠 Home</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

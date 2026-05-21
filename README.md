@@ -4,17 +4,39 @@ A full-stack healthcare management web application developed using **Python, Dja
 
 ---
 
-## Features
+## Features & Functionalities
 
-- Doctor Registration & Management
-- Patient Appointment Booking
-- Lab Technician Module
-- Secure Authentication & Authorization
-- Payment Management
-- CRUD Operations
-- Responsive User Interface
-- Admin Dashboard
-- Session Management & Form Validation
+### Doctor Module
+- Doctor Registration & Login
+- Doctor Profile Management
+- Appointment Viewing & Management
+- Patient Record Access
+
+### Patient Module
+- Patient Registration & Authentication
+- Doctor Search & Appointment Booking
+- Appointment History Management
+- Secure Session Handling
+
+### Lab Technician Module
+- Lab Technician Registration & Management
+- Patient Lab Report Handling
+- Appointment & Test Management
+
+### Appointment Module
+- Online Appointment Scheduling
+- Appointment Status Tracking
+- Date & Time Management
+- CRUD Operations for Appointment Handling
+
+### Payment Module
+- Payment Record Management
+- Billing & Payment Status Handling
+
+### Admin Module
+- Manage Doctors, Patients, and Lab Technicians
+- Monitor Appointment Details
+- System Data Management
 
 ---
 
@@ -37,6 +59,19 @@ A full-stack healthcare management web application developed using **Python, Dja
 - Git
 - GitHub
 - Linux
+
+---
+
+## Key Concepts Implemented
+
+- Authentication & Authorization
+- CRUD Operations
+- Django ORM
+- MVC Architecture
+- Session Management
+- Form Validation
+- Database Integration
+- Responsive Web Design
 
 ---
 
@@ -104,31 +139,25 @@ python manage.py runserver
 
 ---
 
-## Screenshots
-
-Add your project screenshots here.
-
----
-
 ## Learning Outcomes
 
 - Full Stack Web Development using Django
-- Database Integration using MySQL
-- Authentication & Authorization
-- CRUD Operations
-- Backend Development
-- Responsive Web Design
-- Git & GitHub Version Control
+- Backend Development & Database Management
+- Authentication & User Management
+- Appointment Scheduling System Development
+- MySQL Database Integration
+- Version Control using Git & GitHub
+- Responsive UI Development
 
 ---
 
 ## Future Enhancements
 
 - Online Payment Gateway Integration
-- Email Notifications
-- Appointment Reminders
-- REST API Integration
+- Email & SMS Notifications
+- REST API Development
 - Docker Deployment
+- Cloud Deployment on AWS
 
 ---
 
